@@ -32,19 +32,36 @@ def apply_color_distribution_map(image):
     logger.info('Applied transformation: color distribution map')
     return plt.cm.plasma(heatmap.astype(np.uint8))
 
-def apply_hsv_channels(image):
+def apply_hsv_channels(image, delta_h=15, factor_s=1.20, factor_v=1.15):
     """Extract and normalize individual HSV channels."""
+    if not (-30 <= int(delta_h) <= 30):
+        raise ValueError("TT (tone) parameter out of range: delta_h must be in [-30, 30].")
+    if not (0.50 <= float(factor_s) <= 1.50):
+        raise ValueError("TS (saturation) parameter out of range: factor_s must be in [0.50, 1.50].")
+    if not (0.60 <= float(factor_v) <= 1.40):
+        raise ValueError("TB (brightness) parameter out of range: factor_v must be in [0.60, 1.40].")
+
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
 
-    # Normalize each channel for visualization
-    h_vis = cv2.normalize(h, None, 0, 255, cv2.NORM_MINMAX)
-    s_vis = cv2.normalize(s, None, 0, 255, cv2.NORM_MINMAX)
-    v_vis = cv2.normalize(v, None, 0, 255, cv2.NORM_MINMAX)
+    # TT
+    h_tt = ((h.astype(np.int16) + int(delta_h)) % 180).astype(np.uint8)
+    hsv_tt = cv2.merge((h_tt, s, v))
+    tt_img = cv2.cvtColor(hsv_tt, cv2.COLOR_HSV2BGR)
+
+    # TS
+    s_ts = np.clip(s.astype(np.float32) * float(factor_s), 0, 255).astype(np.uint8)
+    hsv_ts = cv2.merge((h, s_ts, v))
+    ts_img = cv2.cvtColor(hsv_ts, cv2.COLOR_HSV2BGR)
+
+    # TB
+    v_tb = np.clip(v.astype(np.float32) * float(factor_v), 0, 255).astype(np.uint8)
+    hsv_tb = cv2.merge((h, s, v_tb))
+    tb_img = cv2.cvtColor(hsv_tb, cv2.COLOR_HSV2BGR)
 
     logger.info('Applied transformation: HSV channels')
     return {
-        "hue": h_vis.astype(np.uint8),
-        "saturation": s_vis.astype(np.uint8),
-        "value": v_vis.astype(np.uint8)
+        "hue": tt_img,
+        "saturation": ts_img,
+        "value": tb_img
     }
