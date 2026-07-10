@@ -1,5 +1,13 @@
 # Artshift
 
+### Origen de datos de imágenes
+
+#### 1. **Nombre del dataset o fuente:** *AI-ArtBench Detection and Attribution of AI-generated A*  
+- **Enlace:** [https://www.kaggle.com/datasets/ravidussilva/real-ai-art](https://www.kaggle.com/datasets/ravidussilva/real-ai-art)  
+- **Cantidad de imágenes:** 60,000  
+- **Tipo de contenido:** Pintura de estilo art-nouveau, baroque, expressionism, impressionism, post-impressionism, realism, renaissance, romanticism, surrealism, ukiyo-e  
+- **Notas:** Imágenes con resolución de 256x256, (datos de su trata...)
+
 ## Overview
 This project showcases an experimental pipeline for analyzing and comparing Impressionist-style paintings using low-level visual features and embedding-based representations.
 
